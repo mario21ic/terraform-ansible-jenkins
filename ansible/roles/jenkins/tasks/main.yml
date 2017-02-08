@@ -1,0 +1,44 @@
+---
+- name: add repository
+  get_url: url=https://pkg.jenkins.io/redhat-stable/jenkins.repo dest=/etc/yum.repos.d/jenkins.repo
+  
+- name: import key
+  rpm_key: state=present key=https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+
+- name: install jenkins
+  yum: state=present name=jenkins
+
+- name: adding script jenkins-support
+  copy: src=jenkins-support dest=/var/lib/jenkins/jenkins-support owner=jenkins mode=644 backup=yes
+
+- name: adding script install-plugins
+  copy: src=install-plugins.sh dest=/var/lib/jenkins/install-plugins.sh owner=jenkins mode=655 backup=yes
+
+- name: adding script install-plugins
+  copy: src=plugins.txt dest=/var/lib/jenkins/plugins.txt owner=jenkins mode=644 backup=yes
+      
+- name: installing plugins
+  command: /var/lib/jenkins/install-plugins.sh docker-commons dockerhub-notification
+  #command: /var/lib/jenkins/install-plugins.sh $(cat /var/lib/jenkins/plugins.txt)
+
+- name: changing permision plugins directory
+  command: chown jenkins:jenkins -R /var/lib/jenkins/plugins
+
+- name: start and enable jenkins
+  service: name=jenkins state=restarted enabled=yes
+
+#- name: adding key private
+#  copy: src=roles/jenkins/files/id_rsa dest=/var/lib/jenkins/.ssh/id_rsa owner=jenkins mode=600 backup=yes
+
+#- name: adding key public
+#  copy: src=roles/jenkins/files/id_rsa.pub dest=/var/lib/jenkins/.ssh/id_rsa.pub owner=jenkins mode=0644 backup=yes
+
+#- name: adding known_hosts
+#  copy: src=roles/jenkins/files/known_hosts dest=/var/lib/jenkins/.ssh/known_hosts owner=jenkins mode=0644 backup=yes
+
+#- name: adding pem
+#  copy: src=roles/jenkins/files/weclub.pem dest=/var/lib/jenkins/weclub.pem owner=jenkins mode=0600 backup=yes
+
+#- name: cat password
+#  command: cat /var/lib/jenkins/secrets/initialAdminPassword
+

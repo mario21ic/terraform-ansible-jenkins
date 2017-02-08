@@ -1,0 +1,11 @@
+---
+- name: install dependencies
+  yum: name={{ item }} state=present update_cache=yes
+  with_items:
+    - ca-certificates
+    - git
+    - gcc
+    - patch
+    - curl 
+    - htop
+    - nmap

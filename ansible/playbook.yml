@@ -1,0 +1,10 @@
+---
+- name: Install base and Jenkins
+  hosts: "tag_Class_ci_server"
+  become: yes
+  roles:
+    - common_ci
+    - jenkins
+  #remote_user: ec2-user
+  #become_user: root
+  #become: yes
